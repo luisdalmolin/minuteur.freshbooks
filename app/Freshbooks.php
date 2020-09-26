@@ -23,6 +23,11 @@ class Freshbooks
      */
 	protected $staff;
 
+    /**
+     * @var array
+     */
+	public $errors = [];
+
     public function __construct($subdomain, $apiToken)
     {
         $this->freshbooks = new FreshBooksApi($subdomain, $apiToken);
@@ -108,9 +113,15 @@ class Freshbooks
         $this->freshbooks->post($payload);
         $this->freshbooks->request();
 
-        if ($this->freshbooks->getResponse()['@attributes']['status'] !== 'ok') {
-            var_dump($payload);
-            dd($this->freshbooks->getResponse());
+        if ($this->freshbooks->getResponse()['@attributes']['status'] === 'ok') {
+            $summary->deleteSessionsFromProject();
+        } else {
+            $this->errors[] = sprintf(
+                'Error when posting hours for project %s (Check if project names are matching). Total Hours: %s. Error message: %s.',
+                $summary->getProjectName(),
+                $summary->getTimeInDecimalHours(),
+                $this->freshbooks->getResponse()['error'] ?? ''
+            );
         }
     }
 

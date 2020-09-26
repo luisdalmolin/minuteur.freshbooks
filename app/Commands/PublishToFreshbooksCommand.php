@@ -34,6 +34,14 @@ class PublishToFreshbooksCommand extends Command
         $freshbooks->postHours($summary);
 
         $this->info('Hours successfully posted to freshbooks.');
+
+        if (count($freshbooks->errors) > 0) {
+            $this->comment('With some errors, though...');
+
+            foreach ($freshbooks->errors as $error) {
+                $this->error($error);
+            }
+        }
     }
 
     /**

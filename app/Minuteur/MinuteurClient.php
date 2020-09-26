@@ -19,7 +19,12 @@ class MinuteurClient
         $summary = Http::get(sprintf('http://localhost:%s/api/projects/summary/daily', self::PORT));
 
         return array_map(function ($item) {
-            return new ProjectDailySummary($item['name'], $item['time'], $item['date'], $item['description']);
+            return new ProjectDailySummary($item['uuid'], $item['name'], $item['time'], $item['date'], $item['notes']);
         }, $summary->json());
+    }
+
+    public function deleteSessionsFromProject($projectUuid)
+    {
+        Http::delete(sprintf('http://localhost:%s/api/projects/%s/sessions/clear', self::PORT, $projectUuid));
     }
 }

@@ -7,6 +7,9 @@ use Carbon\Carbon;
 class ProjectDailySummary
 {
     /** @var string */
+    protected $projectUuid;
+
+    /** @var string */
     protected $projectName;
 
     /** @var int */
@@ -18,12 +21,18 @@ class ProjectDailySummary
     /** @var string */
     protected $notes;
 
-    public function __construct($projectName, $time, $date, $notes)
+    public function __construct($projectUuid, $projectName, $time, $date, $notes)
     {
+        $this->projectUuid = $projectUuid;
         $this->projectName = $projectName;
         $this->time = $time;
         $this->date = Carbon::parse($date);
         $this->notes = $notes;
+    }
+
+    public function getProjectUuid(): string
+    {
+        return $this->projectUuid;
     }
 
     public function getProjectName(): string
@@ -54,5 +63,10 @@ class ProjectDailySummary
     public function getNotesFormated(): string
     {
         return str_replace(', ', "\n\n", $this->notes);
+    }
+
+    public function deleteSessionsFromProject(): void
+    {
+        app(MinuteurClient::class)->deleteSessionsFromProject($this->getProjectUuid());
     }
 }
